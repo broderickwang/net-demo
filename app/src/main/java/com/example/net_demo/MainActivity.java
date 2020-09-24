@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkRequest.Builder builder = new NetworkRequest.Builder();
         builder.addCapability(NET_CAPABILITY_INTERNET);
-        //强制使用蜂窝数据网络
+        //强制使用WiFi网络
         builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
         NetworkRequest build = builder.build();
         connectivityManager.requestNetwork(build,new ConnectivityManager.NetworkCallback(){
