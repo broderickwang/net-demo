@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
 
         this.test();
-        this.test2();
+        this.test3();
     }
 
     private void test(){
@@ -104,6 +104,58 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("okhttp--->", rst);
 
                     one.setText("url:https://www.baidu.com\n"+simpleDateFormat.format(new Date(System.currentTimeMillis()))+"---"+rst);
+
+                }catch (Exception e){
+                    Log.e("a","b",e);
+                }
+            }
+        });
+    }
+
+    private void test3(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkRequest.Builder builder = new NetworkRequest.Builder();
+        builder.addCapability(NET_CAPABILITY_INTERNET);
+        //强制使用蜂窝数据网络
+        builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+        NetworkRequest build = builder.build();
+        connectivityManager.requestNetwork(build,new ConnectivityManager.NetworkCallback(){
+            @Override
+            public void onAvailable(@NonNull final Network network) {
+                super.onAvailable(network);
+                /*try {
+                    URL url = new URL("https://www.baidu.com");
+                    HttpURLConnection connection = (HttpURLConnection)network.openConnection(url);
+                    connection.connect();
+                    Log.i("connectxxxxxs:",connection.getResponseMessage()+"---"+simpleDateFormat.format(new Date(System.currentTimeMillis())));
+
+                    one.setText("url:https://www.baidu.com\n"+connection.getResponseMessage()+"---"+simpleDateFormat.format(new Date(System.currentTimeMillis())));
+                } catch (Exception e) {
+                    Log.e("e",e.toString());
+                }*/
+                super.onAvailable(network);
+
+                SocketFactory socketFactory = network.getSocketFactory();
+                OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                        .socketFactory(socketFactory)
+                        .dns(new Dns() {
+                            @Override
+                            public List<InetAddress> lookup(@NonNull String hostname) throws UnknownHostException {
+                                return Arrays.asList(network.getAllByName(hostname));
+                            }
+                        })
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url("https://xwehr.haier.net/loginNew?target=http://xwehr.haier.net/indexNew")
+                        .build();
+//                Response response = okHttpClient.newCall(request).execute()
+
+                try (Response response = okHttpClient.newCall(request).execute()) {
+                    String rst = response.body().string();
+                    Log.i("okhttp--->", rst);
+
+                    two.setText("url:https://xwehr.haier.net/loginNew?target=http://xwehr.haier.net/indexNew\n"+simpleDateFormat.format(new Date(System.currentTimeMillis()))+"---"+rst);
 
                 }catch (Exception e){
                     Log.e("a","b",e);
